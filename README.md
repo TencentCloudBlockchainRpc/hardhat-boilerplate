@@ -15,8 +15,9 @@ The first things you need to do are cloning this repository and installing its
 dependencies:
 
 ```sh
-git clone https://github.com/NomicFoundation/hardhat-boilerplate.git
+git clone https://github.com/TencentCloudBlockchainRpc/hardhat-boilerplate.git
 cd hardhat-boilerplate
+git checkout trpc_dev
 npm install
 ```
 
@@ -45,46 +46,92 @@ Open [http://localhost:3000/](http://localhost:3000/) to see your Dapp. You will
 need to have [Coinbase Wallet](https://www.coinbase.com/wallet) or [Metamask](https://metamask.io) installed and listening to
 `localhost 8545`.
 
-## User Guide
+## Deploy to Public Chain with T-RPC
+After completing development and local debugging. You can deploy the project
+to public chain with [Tencent Cloud Blockchain RPC](https://www.tencentcloud.com/products/rpc?from_qcintl=122150301).
 
-You can find detailed instructions on using this repository and many tips in [its documentation](https://hardhat.org/tutorial).
+### Prerequisites
+* [Register a Tencent Cloud account](https://www.tencentcloud.com/account/register)
+* [Sign in Blockchain RPC console](https://console.tencentcloud.com/bcrpc/terminal)
+* Create New Application
+* Get the API Key/URL of the Testnet
 
-- [Writing and compiling contracts](https://hardhat.org/tutorial/writing-and-compiling-contracts/)
-- [Setting up the environment](https://hardhat.org/tutorial/setting-up-the-environment/)
-- [Testing Contracts](https://hardhat.org/tutorial/testing-contracts/)
-- [Setting up your wallet](https://hardhat.org/tutorial/boilerplate-project#how-to-use-it)
-- [Hardhat's full documentation](https://hardhat.org/docs/)
+### Set up your network config
+* Identify the network you want to deploy which you can find in [ChainList](https://chainlist.org/)
+* Get the RPC-URL of the network from the [terminal](https://console.tencentcloud.com/bcrpc/terminal)
+* Fill the network configuration params and accounts in the **`hardhat.config.js`** 
+* Fill the EtherScan api-key if you want to verify & publish your contract
 
-For a complete introduction to Hardhat, refer to [this guide](https://hardhat.org/getting-started/#overview).
+The following is a sample configuration based on Polygon-Mumbai. You need to
+replace the following params based on your situation: `{API_KEY}`, `{ACCOUNT_PRIVATE_KEY}` 
+and `{ETHERSCAN_API_KEY}`
 
-## What's Included?
 
-This repository uses our recommended hardhat setup, by using our [`@nomicfoundation/hardhat-toolbox`](https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-toolbox). When you use this plugin, you'll be able to:
+```js
+module.exports = {
+  solidity: {
+    version: "0.8.17",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  },
+  networks:{
+    mumbai:{
+      url: `https://www.tencentcloud-rpc.com/v1/polygon_mumbai/{API_KEY}`,
+      accounts: [`{ACCOUNT_PRIVATE_KEY}`],
+      chainId: 80001
+    },
+  },
+  etherscan: {
+      apiKey: {
+          mumbai: "{ETHERSCAN_API_KEY}"
+      },
+      customChains: [
+         {
+              network: "mumbai",
+              chainId: 80001,
+              urls: {
+                  apiURL: "https://api-testnet.polygonscan.com/api",
+                  browserURL: "https://mumbai.polygonscan.com/"
+              }
+          },
+      ]
+  },
+  
+};
 
-- Deploy and interact with your contracts using [ethers.js](https://docs.ethers.io/v5/) and the [`hardhat-ethers`](https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-ethers) plugin.
-- Test your contracts with [Mocha](https://mochajs.org/), [Chai](https://chaijs.com/) and our own [Hardhat Chai Matchers](https://hardhat.org/hardhat-chai-matchers) plugin.
-- Interact with Hardhat Network with our [Hardhat Network Helpers](https://hardhat.org/hardhat-network-helpers).
-- Verify the source code of your contracts with the [hardhat-etherscan](https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan) plugin.
-- Get metrics on the gas used by your contracts with the [hardhat-gas-reporter](https://github.com/cgewecke/hardhat-gas-reporter) plugin.
-- Measure your tests coverage with [solidity-coverage](https://github.com/sc-forks/solidity-coverage).
+```
+### Deploy to public network
+Then, on a new terminal, go to the repository's root folder and run this to
+deploy your contract:
 
-This project also includes [a sample frontend/Dapp](./frontend), which uses [Create React App](https://github.com/facebook/create-react-app).
+```sh
+npx hardhat run scripts/deploy.js --network mumbai
+```
 
-## Troubleshooting
+You will receive the contract address as output.
+Suppose the console display an address : ```0xB6b558EF8CAb7d0037a6539074dabfaC36Ffd6ea```
+The contract address needs to be configured in ```frontend/src/contracts/contract-address.json```
+```json
+{
+  "Token": "0x66f397997185Ee210107140254F2DBe00EFe2b35"
+}
+```
+Finally, we can run the frontend with:
 
-- `Invalid nonce` errors: if you are seeing this error on the `npx hardhat node`
-  console, try resetting your Metamask account. This will reset the account's
-  transaction history and also the nonce. Open Metamask, click on your account
-  followed by `Settings > Advanced > Clear activity tab data`.
+```sh
+cd frontend
+npm start
+```
 
-## Setting up your editor
-
-[Hardhat for Visual Studio Code](https://hardhat.org/hardhat-vscode) is the official Hardhat extension that adds advanced support for Solidity to VSCode. If you use Visual Studio Code, give it a try!
-
-## Getting help and updates
-
-If you need help with this project, or with Hardhat in general, please read [this guide](https://hardhat.org/hardhat-runner/docs/guides/getting-help) to learn where and how to get it.
-
-For the latest news about Hardhat, [follow us on Twitter](https://twitter.com/HardhatHQ), and don't forget to star [our GitHub repository](https://github.com/NomicFoundation/hardhat)!
+If you want to verify & publish your contract,
+open a new terminal, go to the repository's root folder and run 
+the following command:
+```sh
+npx hardhat verify --network mumbai 0x66f397997185Ee210107140254F2DBe00EFe2b35
+```
 
 **Happy _building_!**
