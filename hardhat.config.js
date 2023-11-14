@@ -17,29 +17,5 @@ module.exports = {
     }
   },
   networks:{
-    // select the appropriate network. Take polygon_mumbai as an example
-    mumbai:{
-      // Fill with the uri got from tencent cloud blockchain RPC. https://console.intl.cloud.tencent.com/bcrpc/terminal
-      url: `https://www.tencentcloud-rpc.com/v1/polygon_mumbai/{API_KEY}`,
-      // Fill with your test private key for deployment, the address corresponding to the key will have 1000000 Tencent Rpc Token(TRT)
-      accounts: [`{ACCOUNT_PRIVATE_KEY}`],
-      // Fill with the appropriate network id. Common network id mappings can be found at https://chainlist.org/?testnets=true
-      chainId: 80001
-    },
-  },
-  etherscan: {
-    apiKey: {
-      mumbai: "{ETHERSCAN_API_KEY}"
-    },
-    customChains: [
-      {
-        network: "mumbai",
-        chainId: 80001,
-        urls: {
-          apiURL: "https://api-testnet.polygonscan.com/api",
-          browserURL: "https://mumbai.polygonscan.com/"
-        }
-      },
-    ]
-  },
+  }
 };

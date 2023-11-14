@@ -105,6 +105,11 @@ module.exports = {
 
 ```
 ### Deploy to public network
+First, you can replace **`hardhat.config.js`** with **`hardhat.config.js.mumbai`** or rewrite it as you need.
+```sh
+cp hardhat.config.js hardhat.config.js.backup
+mv hardhat.config.js.mumbai hardhat.config.js
+```
 Then, on a new terminal, go to the repository's root folder and run this to
 deploy your contract:
 
